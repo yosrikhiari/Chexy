@@ -1,0 +1,218 @@
+version: '3.8'
+services:
+  postgres:
+    image: yosrikhiari/chexy-postgres:latest
+    container_name: chexy_postgres
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak_user
+      POSTGRES_PASSWORD: keycloak_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chexy-network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak_user -d keycloak_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ai-model:
+    image: yosrikhiari/chexy-ai-model:latest
+    container_name: chexy_ai_model
+    ports:
+      - "5000:5000"
+    networks:
+      - chexy-network
+    environment:
+      STOCKFISH_PATH: /usr/local/bin/stockfish
+    # healthcheck
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  mongodb:
+    image: yosrikhiari/chexy-mongodb:latest
+    container_name: chexy_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo_user
+      MONGO_INITDB_ROOT_PASSWORD: mongo_password
+      MONGO_INITDB_DATABASE: chessmystic
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - chexy-network
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  keycloak:
+    image: yosrikhiari/chexy-keycloak:latest
+    container_name: chexy_keycloak
+    environment:
+      # Database configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak_db
+      KC_DB_USERNAME: keycloak_user
+      KC_DB_PASSWORD: keycloak_password
+      # Admin credentials
+      KC_BOOTSTRAP_ADMIN_USERNAME: chessnewadmin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # Hostname configuration (updated)
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      # Logging
+      KC_LOG_LEVEL: INFO
+      # Performance settings
+      KC_CACHE: ispn
+      KC_CACHE_STACK: tcp
+    ports:
+      - "8080:8080"
+      - "9000:9000"
+    networks:
+      - chexy-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    # Healthcheck removed as curl is not available
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 60s
+
+  backend:
+    image: yosrikhiari/chexy-backend:latest 
+    container_name: chexy_backend
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATA_MONGODB_URI: mongodb://mongo_user:mongo_password@mongodb:27017/chessmystic?authSource=admin
+      SPRING_DATA_MONGODB_CONNECTION_TIMEOUT: 30000
+      SPRING_DATA_MONGODB_SOCKET_TIMEOUT: 30000
+      KEYCLOAK_SERVER_URL: http://keycloak:8080
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/chess
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/chess/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/chess/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/chess
+      SPRING_MVC_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8080
+      JAVA_OPTS: -Xmx512m -Xms256m -Djava.security.egd=file:/dev/./urandom
+      HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
+      GMAIL_PASSWORD: zeltgszvyglastfa
+    networks:
+      - chexy-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    restart: unless-stopped
+    command: >
+      sh -c "
+      echo 'Waiting for Keycloak to be ready...';
+      max_attempts=60;
+      attempt=0;
+      while [ $$attempt -lt $$max_attempts ]; do
+        if curl -f http://keycloak:8080/health/ready 2>/dev/null; then
+          echo 'Keycloak is ready!';
+          break;
+        fi;
+        attempt=$$((attempt + 1));
+        echo 'Keycloak not ready, attempt '$$attempt'/'$$max_attempts', waiting 10 seconds...';
+        sleep 10;
+      done;
+      
+      if [ $$attempt -eq $$max_attempts ]; then
+        echo 'ERROR: Keycloak health check timed out';
+        exit 1;
+      fi;
+      
+      echo 'Waiting for chess realm to be available...';
+      max_attempts=30;
+      attempt=0;
+      while [ $$attempt -lt $$max_attempts ]; do
+        if curl -f http://keycloak:8080/realms/chess/.well-known/openid-configuration 2>/dev/null; then
+          echo 'Chess realm is ready!';
+          break;
+        fi;
+        attempt=$$((attempt + 1));
+        echo 'Chess realm not ready, attempt '$$attempt'/'$$max_attempts', waiting 10 seconds...';
+        sleep 10;
+      done;
+      
+      if [ $$attempt -eq $$max_attempts ]; then
+        echo 'WARNING: Chess realm check timed out, but continuing startup...';
+      fi;
+      
+      echo 'Starting Spring Boot application...';
+      java $$JAVA_OPTS -jar app.jar"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 10
+      start_period: 180s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  frontend:
+    image: yosrikhiari/chexy-frontend:latest
+    container_name: chexy_frontend
+    ports:
+      - "3000:80"
+    networks:
+      - chexy-network
+    depends_on:
+      backend:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8081
+      - REACT_APP_KEYCLOAK_URL=http://localhost:8080
+      - REACT_APP_KEYCLOAK_REALM=chess
+      - REACT_APP_KEYCLOAK_CLIENT_ID=chessid
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--tries=1", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+
+
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb-data:
+    driver: local
+
+networks:
+  chexy-network:
+    driver: bridge
