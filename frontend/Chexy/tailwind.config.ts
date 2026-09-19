@@ -64,11 +64,11 @@ export default {
           ring: 'hsl(var(--sidebar-ring))'
         },
         chess: {
-          'light': '#f0d9b5',
-          'dark': '#b58863',
-          'highlight': '#9b87f5',
-          'valid-move': 'rgba(155, 135, 245, 0.7)',
-          'check': 'rgba(255, 0, 0, 0.5)',
+          'light': '#ecd9b4',
+          'dark': '#a97c5a',
+          'highlight': 'rgba(155, 199, 84, 0.55)',
+          'valid-move': 'rgba(96, 165, 210, 0.45)',
+          'check': 'rgba(220, 60, 60, 0.55)',
         }
       },
       borderRadius: {
@@ -77,14 +77,18 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        'medieval': ['MedievalSharp', 'cursive'],
-        'elegant': ['Crimson Text', 'serif'],
-        'serif': ['Cinzel', 'serif'],
+        'sans': ['Manrope', 'system-ui', 'sans-serif'],
+        'display': ['Fraunces', 'Georgia', 'serif'],
+        'mono': ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+        // old names, kept so untouched pages keep compiling
+        'medieval': ['Fraunces', 'Georgia', 'serif'],
+        'elegant': ['Manrope', 'system-ui', 'sans-serif'],
+        'serif': ['Fraunces', 'Georgia', 'serif'],
       },
       backgroundImage: {
-        'mystical-gradient': 'linear-gradient(to bottom right, #1a1f2c, #2e1e4a)',
-        'dragon-fire': 'linear-gradient(135deg, #ff6b35, #f7931e, #ffd700)',
-        'animated-bg': 'linear-gradient(-45deg, hsl(260 30% 8%), hsl(260 25% 12%), hsl(260 20% 16%), hsl(260 30% 8%))',
+        'mystical-gradient': 'none',
+        'dragon-fire': 'none',
+        'animated-bg': 'none',
       },
       backgroundSize: {
         '400': '400% 400%',
@@ -127,13 +131,13 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'float': 'float 3s ease-in-out infinite',
-        'sparkle': 'sparkle 2s ease-in-out infinite',
-        'dragon-fire': 'dragon-fire 3s ease-in-out infinite',
-        'gradient-shift': 'gradient-shift 4s ease infinite'
+        'float': 'none',
+        'sparkle': 'none',
+        'dragon-fire': 'none',
+        'gradient-shift': 'none'
       },
       boxShadow: {
-        'mystical-aura': '0 0 20px rgba(255, 193, 7, 0.3)',
+        'mystical-aura': 'none',
       }
     }
   },

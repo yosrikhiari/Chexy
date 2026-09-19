@@ -1,97 +1,74 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import FriendsSidebar from "./FriendsSidebar";
-import { Button } from "@/components/ui/button";
+
+const NAV = [
+  { to: "/game-select", label: "Play" },
+  { to: "/leaderboard", label: "Leaderboard" },
+  { to: "/profile", label: "Profile" },
+];
 
 const MainLayout: React.FC = () => {
   const [isFriendsSidebarCollapsed, setIsFriendsSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log("MainLayout render:", { isFriendsSidebarCollapsed });
+  const toggleFriendsSidebar = () => setIsFriendsSidebarCollapsed((v) => !v);
 
-  const toggleFriendsSidebar = () => {
-    setIsFriendsSidebarCollapsed(!isFriendsSidebarCollapsed);
-  };
-
-  // Don't show header on game pages
-  const isGamePage = location.pathname.includes('/game/');
+  // The board page owns the whole viewport.
+  const isGamePage = location.pathname.includes("/game/");
 
   return (
-    <div className="min-h-screen bg-mystical-gradient flex flex-col">
-      {/* Fantasy Header */}
+    <div className="min-h-screen bg-background flex flex-col">
       {!isGamePage && (
-        <header className="bg-card/80 backdrop-blur-sm border-b border-border/50 mystical-glow flex-shrink-0">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              {/* Logo Section */}
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-12 h-12 flex items-center justify-center cursor-pointer"
-                  onClick={() => navigate('/game-select')}
-                >
-                  <img
-                    src="/chexy-logo.png"
-                    alt="Chexy"
-                    className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(255,193,7,0.6)]"
-                  />
-                </div>
-                <div>
-                  <h1 className="font-medieval text-xl font-bold text-primary animate-float">
-                    Chexy
-                  </h1>
-                  <p className="text-xs text-muted-foreground font-elegant">
-                    Strategic Chess
-                  </p>
-                </div>
-              </div>
+        <header className="border-b border-border flex-shrink-0">
+          <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => navigate("/game-select")}
+              className="flex items-center gap-2.5 text-foreground"
+              aria-label="Chexy home"
+            >
+              <span className="font-display text-2xl leading-none text-primary" aria-hidden="true">♞</span>
+              <span className="font-display text-lg tracking-tight">Chexy</span>
+            </button>
 
-              {/* Navigation */}
-              <nav className="hidden md:flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/game-select')}
-                  className="fantasy-button font-elegant"
-                >
-                  Arena
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/leaderboard')}
-                  className="fantasy-button font-elegant"
-                >
-                  Hall of Fame
-                </Button>
-              </nav>
+            <nav className="hidden md:flex items-center gap-1" aria-label="Main">
+              {NAV.map((item) => {
+                const active = location.pathname === item.to;
+                return (
+                  <button
+                    key={item.to}
+                    type="button"
+                    onClick={() => navigate(item.to)}
+                    aria-current={active ? "page" : undefined}
+                    className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                      active ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
 
-              {/* Mobile Menu Button */}
-              <div className="md:hidden">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleFriendsSidebar}
-                  className="fantasy-button"
-                >
-                  <span className="font-medieval">☰</span>
-                </Button>
-              </div>
-            </div>
+            <button
+              type="button"
+              className="md:hidden px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground"
+              onClick={toggleFriendsSidebar}
+              aria-label="Toggle friends"
+            >
+              Friends
+            </button>
           </div>
         </header>
       )}
 
-      {/* Main content area - simple scrolling */}
-      <main className={`flex-1 transition-all duration-300 ${isFriendsSidebarCollapsed ? 'mr-12' : 'mr-80'}`}>
+      <main className={`flex-1 transition-all duration-300 ${isFriendsSidebarCollapsed ? "mr-12" : "mr-80"}`}>
         <Outlet />
       </main>
 
-      {/* Friends Sidebar */}
-      <FriendsSidebar
-        isCollapsed={isFriendsSidebarCollapsed}
-        onToggleCollapse={toggleFriendsSidebar}
-      />
+      <FriendsSidebar isCollapsed={isFriendsSidebarCollapsed} onToggleCollapse={toggleFriendsSidebar} />
     </div>
   );
 };

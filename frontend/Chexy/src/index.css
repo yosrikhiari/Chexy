@@ -1,41 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Crimson+Text:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Fantasy Theme Colors */
-    --background: 260 30% 8%;
-    --foreground: 0 0% 95%;
-    --card: 260 25% 12%;
-    --card-foreground: 0 0% 95%;
-    --popover: 260 25% 12%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 45 100% 60%;
-    --primary-foreground: 260 30% 8%;
-    --secondary: 260 20% 16%;
-    --secondary-foreground: 45 100% 60%;
-    --muted: 260 20% 16%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 280 60% 52%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
+    /* Board-derived palette: charcoal ground, ivory text, sand primary, walnut accent */
+    --background: 220 14% 8%;
+    --foreground: 40 20% 92%;
+    --card: 220 12% 11%;
+    --card-foreground: 40 20% 92%;
+    --popover: 220 12% 11%;
+    --popover-foreground: 40 20% 92%;
+    --primary: 38 45% 72%;
+    --primary-foreground: 220 14% 10%;
+    --secondary: 220 10% 16%;
+    --secondary-foreground: 40 20% 88%;
+    --muted: 220 10% 16%;
+    --muted-foreground: 220 8% 62%;
+    --accent: 24 35% 42%;
+    --accent-foreground: 40 20% 95%;
+    --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 260 20% 25%;
-    --input: 260 20% 25%;
-    --ring: 45 100% 60%;
-    --radius: 0.5rem;
-    
-    /* Chess colors */
-    --chess-light: 40 70% 80%;
-    --chess-dark: 30 60% 45%;
-    --chess-highlight: 120 100% 75% / 0.5;
-    --chess-valid-move: 200 100% 75% / 0.5;
-    
-    /* Fantasy Theme Extras */
-    --dragon-fire: linear-gradient(135deg, #ff6b35, #f7931e, #ffd700);
-    --mystical-aura: 0 0 20px rgba(255, 193, 7, 0.3);
+    --border: 220 10% 20%;
+    --input: 220 10% 20%;
+    --ring: 38 45% 72%;
+    --radius: 0.375rem;
+
+    /* Board squares */
+    --chess-light: 40 60% 82%;
+    --chess-dark: 28 36% 55%;
+    --chess-highlight: 84 55% 55% / 0.55;
+    --chess-valid-move: 200 60% 60% / 0.45;
   }
 
   * {
@@ -54,88 +50,88 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Crimson Text', serif;
+    font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-feature-settings: 'ss01', 'cv11';
   }
 
-  /* Custom scrollbar hiding */
+  h1, h2, h3 {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
 
-  /* Smooth scrolling */
-  * {
-    scroll-behavior: smooth;
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Chess board styles */
+  /* Board squares */
   .bg-chess-light { background-color: hsl(var(--chess-light)); }
   .bg-chess-dark { background-color: hsl(var(--chess-dark)); }
   .bg-chess-highlight { background-color: hsl(var(--chess-highlight)); }
   .bg-chess-valid-move { background-color: hsl(var(--chess-valid-move)); }
 
-  /* Fantasy button styles */
+  /* Primary action: flat sand on charcoal. The old class names stay so every page picks this up. */
   .fantasy-button {
-    @apply bg-gradient-to-br from-primary to-orange-500 border-2 border-primary text-primary-foreground font-semibold shadow-lg transition-all duration-300;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    @apply bg-primary text-primary-foreground border border-primary font-semibold transition-colors duration-150;
+    text-shadow: none;
   }
 
   .fantasy-button:hover {
-    @apply -translate-y-0.5 shadow-xl;
-    background: linear-gradient(135deg, hsl(35 100% 55%), hsl(45 100% 60%));
+    background: hsl(38 45% 78%);
+    border-color: hsl(38 45% 78%);
   }
 
-  /* RPG card hover effects */
   .rpg-card-hover {
-    @apply transition-all duration-300;
+    @apply transition-colors duration-150;
   }
 
   .rpg-card-hover:hover {
-    @apply -translate-y-1 scale-105 shadow-2xl;
+    border-color: hsl(var(--primary) / 0.6);
+  }
+
+  /* Numbers that line up: ratings, points, timers */
+  .num {
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Small uppercase label */
+  .label {
+    @apply text-xs uppercase tracking-[0.12em] text-muted-foreground;
   }
 }
 
 @layer utilities {
-  /* Main background - fixed to prevent scrolling issues */
+  /* Page ground — plain. Old class kept for the pages that still use it. */
   .bg-mystical-gradient {
-    background: linear-gradient(135deg, hsl(260 30% 8%), hsl(260 25% 12%), hsl(260 20% 16%));
-    background-attachment: fixed;
-    background-size: cover;
-    position: relative;
+    background: hsl(var(--background));
   }
 
-  /* Custom fonts */
-  .font-medieval { font-family: 'MedievalSharp', cursive; }
-  .font-elegant { font-family: 'Crimson Text', serif; }
-  .font-serif { font-family: 'Cinzel', serif; }
+  /* Old font utilities now map onto the two real faces. */
+  .font-medieval { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; }
+  .font-elegant { font-family: 'Manrope', system-ui, sans-serif; }
+  .font-serif { font-family: 'Fraunces', Georgia, serif; }
 
-  /* Custom animations */
-  .animate-float { animation: float 3s ease-in-out infinite; }
-  .animate-sparkle { animation: sparkle 2s ease-in-out infinite; }
+  /* Decorative effects from the old theme are intentionally inert. */
+  .animate-float { animation: none; }
+  .animate-sparkle { animation: none; }
+  .mystical-glow { box-shadow: none; }
+  .dragon-scale { background-image: none; }
+}
 
-  /* Effects */
-  .mystical-glow { box-shadow: var(--mystical-aura); }
-  .dragon-scale {
-    background-image: 
-      radial-gradient(circle at 25% 25%, rgba(255, 193, 7, 0.1) 2px, transparent 2px),
-      radial-gradient(circle at 75% 75%, rgba(255, 193, 7, 0.1) 2px, transparent 2px);
-    background-size: 8px 8px;
-  }
-
-  /* Keyframe animations */
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-
-  @keyframes sparkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.1); }
-  }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

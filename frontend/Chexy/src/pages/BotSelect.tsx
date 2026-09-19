@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@/Interfaces/user/User";
 import { JwtService } from "@/services/JwtService.ts";
@@ -92,149 +90,70 @@ const BotSelect: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-full bg-mystical-gradient flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-primary font-medieval text-lg">Summoning challengers...</p>
-        </div>
+      <div className="h-full flex items-center justify-center">
+        <p className="text-muted-foreground text-sm">Loading…</p>
       </div>
     );
   }
 
+  const tier = (points: number) =>
+    points <= 600 ? "Beginner" : points <= 800 ? "Intermediate" : points <= 1200 ? "Advanced" : points <= 1800 ? "Expert" : "Engine";
+
   return (
-    <div className="h-full bg-mystical-gradient p-4 flex flex-col">
-      <div className="max-w-6xl mx-auto flex-1 flex flex-col">
-        {/* Header */}
-        <div className="text-center mb-6 flex-shrink-0">
-          <h1 className="font-medieval text-3xl sm:text-4xl text-primary mb-3 animate-float">
-            Choose Your Challenger
-          </h1>
-          <div className="w-20 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-3 rounded-full"></div>
-          <p className="text-base text-muted-foreground font-elegant max-w-2xl mx-auto">
-            Select your worthy opponent from the mystical realm - each with their own unique strength and personality
-          </p>
-        </div>
+    <div className="h-full p-6 md:p-10">
+      <div className="max-w-3xl mx-auto">
+        <p className="label mb-2">Play vs computer</p>
+        <h1 className="text-3xl md:text-4xl mb-2">Choose an opponent</h1>
+        <p className="text-muted-foreground mb-8 max-w-prose">
+          Every level is Stockfish, throttled to a rating. The number is the strength you are playing against; pick the one just above your own.
+        </p>
 
-        
+        <ol className="border border-border rounded-md divide-y divide-border">
+          {difficultyLevels.map((bot) => {
+            const config = getDifficultyConfig(bot.strategy);
+            const isSelected = selectedDifficulty === bot.strategy;
+            return (
+              <li key={bot.strategy}>
+                <button
+                  type="button"
+                  onClick={() => handleSelectBot(bot.strategy)}
+                  disabled={isSelected}
+                  aria-pressed={isSelected}
+                  className={`w-full text-left grid grid-cols-[2.5rem_1fr_auto] md:grid-cols-[2.5rem_1fr_auto_auto] items-center gap-4 px-4 py-4 transition-colors ${
+                    isSelected ? "bg-secondary" : "hover:bg-secondary/60"
+                  }`}
+                >
+                  <span className="font-display text-3xl leading-none text-primary text-center" aria-hidden="true">
+                    {config.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold">{bot.name}</span>
+                    <span className="block text-sm text-muted-foreground">{bot.description}</span>
+                  </span>
+                  <span className="hidden md:flex gap-1.5">
+                    {bot.characteristics.slice(0, 2).map((c) => (
+                      <span key={c} className="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground">
+                        {c}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="text-right">
+                    <span className="block num text-lg">{bot.points}</span>
+                    <span className="block text-xs text-muted-foreground">{tier(bot.points)}</span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
 
-
-
-        <div className="flex flex-1 gap-6">
-          {/* Bot Selection Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {difficultyLevels.map((bot, index) => {
-                const config = getDifficultyConfig(bot.strategy);
-                const isSelected = selectedDifficulty === bot.strategy;
-                
-                return (
-                  <Card
-                    key={index}
-                    className={`rpg-card-hover cursor-pointer bg-card/80 backdrop-blur-sm border-2 transition-all duration-300 ${
-                      isSelected 
-                        ? 'border-primary shadow-lg scale-105' 
-                        : 'border-border/50 hover:border-primary/50'
-                    }`}
-                    onClick={() => handleSelectBot(bot.strategy)}
-                  >
-                    <CardHeader className="text-center">
-                      <div className="flex justify-center mb-4">
-                        <div className={`w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mystical-glow ${
-                          isSelected ? 'animate-pulse' : ''
-                        }`}>
-                          <span className="text-3xl">{bot.icon}</span>
-                        </div>
-                      </div>
-                      <CardTitle className="font-medieval text-xl text-primary">{bot.name}</CardTitle>
-                      <CardDescription className="font-elegant text-sm leading-relaxed">
-                        {bot.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                      <div className="flex items-center justify-center gap-2 mb-3">
-                        <Badge variant="outline" className="font-elegant text-xs">
-                          {bot.points} pts
-                        </Badge>
-                        <Badge variant="secondary" className="font-elegant text-xs">
-                          {bot.points <= 600 ? 'Beginner' : 
-                          bot.points <= 800 ? 'Intermediate' : 
-                          bot.points <= 1200 ? 'Advanced' : 
-                          bot.points <= 1800 ? 'Expert' : 'Master'}
-                        </Badge>
-                      </div>
-                      
-                      {/* Characteristics */}
-                      <div className="mb-4">
-                        <p className="text-xs text-muted-foreground font-elegant mb-2">Characteristics:</p>
-                        <div className="flex flex-wrap gap-1 justify-center">
-                          {bot.characteristics.slice(0, 2).map((char, idx) => (
-                            <span key={idx} className="text-xs bg-secondary/50 text-secondary-foreground px-2 py-1 rounded-full">
-                              {char}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <Button 
-                        variant="outline" 
-                        className={`w-full fantasy-button font-elegant ${
-                          isSelected ? 'bg-primary text-primary-foreground' : ''
-                        }`}
-                        disabled={isSelected}
-                      >
-                        {isSelected ? 'Selected' : 'Challenge'}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          
-
-          {/* Difficulty Level Guide */}
-            <div className="w-64 flex-shrink-0 hidden lg:block">
-              <div className="bg-card/50 backdrop-blur-sm rounded-lg p-4 border border-border/50 sticky top-4">
-                <h3 className="font-medieval text-lg text-primary mb-4">Difficulty Guide</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <span>Novice (400 pts)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-                    <span>Apprentice (600 pts)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
-                    <span>Journeyman (800 pts)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                    <span>Expert (1200 pts)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                    <span>Master (1800 pts)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span>Grandmaster (2400+ pts)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-        </div>
-        
-        
-        {/* Back Button */}
-        <div className="mt-6 text-center flex-shrink-0">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("/game-select")}
-            className="font-elegant text-muted-foreground hover:text-primary"
-          >
-            ← Return to Arena
+        <div className="mt-6 flex items-center justify-between text-sm">
+          <Button variant="ghost" onClick={() => navigate("/game-select")} className="text-muted-foreground hover:text-foreground px-0">
+            ← Back
           </Button>
+          <span className="text-muted-foreground">
+            {isRanked ? "Ranked — rating changes apply" : "Casual — no rating change"}
+          </span>
         </div>
       </div>
     </div>

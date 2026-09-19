@@ -26,24 +26,21 @@ const NotFound = () => {
         <div className="bg-card/80 backdrop-blur-sm rounded-lg p-8 border-2 border-border/50 mystical-glow">
           <h2 className="font-medieval text-6xl text-primary mb-4">404</h2>
           <h3 className="font-medieval text-2xl text-primary mb-4">Page Not Found</h3>
-          <p className="text-muted-foreground font-elegant mb-8">
-            The mystical realm you seek has vanished into the void. 
-            Perhaps it was never meant to be discovered...
-          </p>
+          <p className="text-muted-foreground font-elegant mb-8">This page does not exist.</p>
           
           <div className="space-y-4">
             <Button 
               onClick={() => navigate("/game-select")}
               className="w-full fantasy-button font-elegant text-lg py-3"
             >
-              Return to the Arena
+              Back to play
             </Button>
             <Button 
               variant="outline" 
               onClick={() => navigate("/login")}
-              className="w-full fantasy-button font-elegant"
+              className="w-full font-elegant"
             >
-              Enter the Realm
+              Sign in
             </Button>
           </div>
         </div>

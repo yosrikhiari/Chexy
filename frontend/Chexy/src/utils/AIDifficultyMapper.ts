@@ -13,33 +13,33 @@ export const AI_DIFFICULTY_MAP: Record<AIStrategy, DifficultyConfig> = {
   // Legacy strategies (mapped to balanced difficulty)
   defensive: {
     points: 800,
-    name: "Defensive Sage",
-    description: "A cautious strategist who prioritizes defense",
-    icon: "🛡️",
+    name: "Defensive",
+    description: "Prefers solid positions and trades down.",
+    icon: "♗",
     color: "blue",
     characteristics: ["Defensive play", "Cautious moves", "Solid position"]
   },
   aggressive: {
     points: 1200,
-    name: "Aggressive Warrior",
-    description: "A bold fighter who seeks tactical opportunities",
-    icon: "⚔️",
+    name: "Aggressive",
+    description: "Looks for tactics and keeps pieces active.",
+    icon: "♘",
     color: "red",
     characteristics: ["Attacking play", "Tactical combinations", "Active pieces"]
   },
   balanced: {
     points: 1000,
-    name: "Balanced Strategist",
-    description: "A well-rounded player with mixed approach",
-    icon: "⚖️",
+    name: "Balanced",
+    description: "Mixes positional and tactical play.",
+    icon: "♖",
     color: "purple",
     characteristics: ["Mixed strategy", "Adaptive play", "Positional understanding"]
   },
   adaptive: {
     points: 1400,
-    name: "Adaptive Master",
-    description: "A flexible player who adjusts to the position",
-    icon: "🔄",
+    name: "Adaptive",
+    description: "Adjusts its plan to the position on the board.",
+    icon: "♕",
     color: "green",
     characteristics: ["Positional adaptation", "Dynamic play", "Strategic flexibility"]
   },
@@ -47,51 +47,51 @@ export const AI_DIFFICULTY_MAP: Record<AIStrategy, DifficultyConfig> = {
   // New detailed difficulty levels
   novice: {
     points: 400,
-    name: "The Novice Apprentice",
-    description: "A young mage learning the ancient arts of chess",
-    icon: "🧙‍♂️",
+    name: "Novice",
+    description: "Plays fast, blunders often. Good for learning the moves.",
+    icon: "♙",
     color: "yellow",
-    characteristics: ["Makes many mistakes", "Random moves", "Basic understanding"]
+    characteristics: ["Blunders often", "Fast moves"]
   },
   apprentice: {
     points: 600,
-    name: "The Dedicated Student",
-    description: "A diligent learner with growing knowledge",
-    icon: "📚",
+    name: "Apprentice",
+    description: "Knows basic tactics; still drops pieces under pressure.",
+    icon: "♙",
     color: "orange",
-    characteristics: ["Frequent mistakes", "Basic tactics", "Learning phase"]
+    characteristics: ["Basic tactics", "Drops pieces"]
   },
   journeyman: {
     points: 800,
-    name: "The Skilled Journeyman",
-    description: "A competent player with solid fundamentals",
-    icon: "⚒️",
+    name: "Journeyman",
+    description: "Sound fundamentals, occasional mistakes.",
+    icon: "♗",
     color: "cyan",
-    characteristics: ["Occasional mistakes", "Good fundamentals", "Tactical awareness"]
+    characteristics: ["Sound openings", "Some mistakes"]
   },
   expert: {
     points: 1200,
-    name: "The Wise Expert",
-    description: "A seasoned player with deep understanding",
-    icon: "🧙‍♀️",
+    name: "Expert",
+    description: "Rarely blunders; plays with a plan.",
+    icon: "♘",
     color: "blue",
-    characteristics: ["Rare mistakes", "Strategic thinking", "Positional play"]
+    characteristics: ["Positional play", "Rare mistakes"]
   },
   master: {
     points: 1800,
-    name: "The Ancient Master",
-    description: "A legendary player with centuries of wisdom",
-    icon: "🐉",
+    name: "Master",
+    description: "Calculates deeply. Expect a long game.",
+    icon: "♖",
     color: "purple",
-    characteristics: ["Minimal mistakes", "Advanced strategy", "Deep calculation"]
+    characteristics: ["Deep calculation", "Endgame technique"]
   },
   grandmaster: {
     points: 2400,
-    name: "The Grandmaster",
-    description: "A chess deity with unparalleled skill and a fairly long beard",
-    icon: "👑",
+    name: "Grandmaster",
+    description: "Full engine strength.",
+    icon: "♔",
     color: "gold",
-    characteristics: ["Perfect play", "Master-level strategy", "Unbeatable strength"]
+    characteristics: ["Engine strength", "No handicap"]
   }
 };
 
