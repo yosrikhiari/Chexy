@@ -1,7 +1,7 @@
 # Chexy
 
 A chess platform with a classic mode and an RPG mode (armies, gold, special abilities), played
-in realtime against friends or Stockfish-backed bots. Built at ESPRIT, 2025.
+in realtime against friends or Stockfish-backed bots. Built at ESPRIT, June–October 2025.
 
 This monorepo replaces four earlier repositories (Chexy-B, Chexy-F, Chexy-M, Chexy-Deployment);
 each was imported with its full history via `git subtree`.
