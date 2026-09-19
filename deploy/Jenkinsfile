@@ -12,47 +12,20 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repositories') {
+        stage('Clone Repository') {
             steps {
                 script {
-                    // Checkout all repositories using SCM Git
+                    // One checkout: the Chexy monorepo (backend/, frontend/, ml/, deploy/)
                     checkout scmGit(
                         branches: [[name: '*/main']],
-                        extensions: [
-                            [$class: 'RelativeTargetDirectory', relativeTargetDir: 'Chexy-F'],
-                            [$class: 'CleanBeforeCheckout']
-                        ],
+                        extensions: [[$class: 'CleanBeforeCheckout']],
                         userRemoteConfigs: [[
                             credentialsId: 'github-credentials',
-                            url: 'https://github.com/yosrikhiari/Chexy-F'
+                            url: 'https://github.com/yosrikhiari/Chexy'
                         ]]
                     )
 
-                    checkout scmGit(
-                        branches: [[name: '*/main']],
-                        extensions: [
-                            [$class: 'RelativeTargetDirectory', relativeTargetDir: 'Chexy-B'],
-                            [$class: 'CleanBeforeCheckout']
-                        ],
-                        userRemoteConfigs: [[
-                            credentialsId: 'github-credentials',
-                            url: 'https://github.com/yosrikhiari/Chexy-B'
-                        ]]
-                    )
-
-                    checkout scmGit(
-                        branches: [[name: '*/main']],
-                        extensions: [
-                            [$class: 'RelativeTargetDirectory', relativeTargetDir: 'Chexy-M'],
-                            [$class: 'CleanBeforeCheckout']
-                        ],
-                        userRemoteConfigs: [[
-                            credentialsId: 'github-credentials',
-                            url: 'https://github.com/yosrikhiari/Chexy-M'
-                        ]]
-                    )
-
-                    echo "✓ All repositories cloned successfully"
+                    echo "✓ Repository cloned successfully"
                 }
             }
         }
@@ -61,10 +34,10 @@ pipeline {
             steps {
                 script {
                     def dockerfiles = [
-                        'Chexy-M/Models/Dockerfile',
-                        'Chexy-B/keycloak/Dockerfile',
-                        'Chexy-B/backend/Dockerfile',
-                        'Chexy-F/Chexy/Dockerfile'
+                        'ml/Models/Dockerfile',
+                        'backend/keycloak/Dockerfile',
+                        'backend/backend/Dockerfile',
+                        'frontend/Chexy/Dockerfile'
                     ]
 
                     for (dockerfile in dockerfiles) {
@@ -82,10 +55,10 @@ pipeline {
             steps {
                 script {
                     def components = [
-                        [name: 'ai-model', path: 'Chexy-M/Models', image: "${REGISTRY}/chexy-ai-model"],
-                        [name: 'keycloak', path: 'Chexy-B/keycloak', image: "${REGISTRY}/chexy-keycloak"],
-                        [name: 'backend', path: 'Chexy-B/backend', image: "${REGISTRY}/chexy-backend"],
-                        [name: 'frontend', path: 'Chexy-F/Chexy', image: "${REGISTRY}/chexy-frontend"]
+                        [name: 'ai-model', path: 'ml/Models', image: "${REGISTRY}/chexy-ai-model"],
+                        [name: 'keycloak', path: 'backend/keycloak', image: "${REGISTRY}/chexy-keycloak"],
+                        [name: 'backend', path: 'backend/backend', image: "${REGISTRY}/chexy-backend"],
+                        [name: 'frontend', path: 'frontend/Chexy', image: "${REGISTRY}/chexy-frontend"]
                     ]
 
                     docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") {
@@ -126,7 +99,7 @@ pipeline {
         stage('Create ConfigMap') {
             steps {
                 script {
-                    if (!fileExists('Chexy-B/keycloak/realm-export.json')) {
+                    if (!fileExists('backend/keycloak/realm-export.json')) {
                         echo "Warning: realm-export.json not found, skipping ConfigMap creation"
                     } else {
                         // Only use validate=false with kubectl apply
@@ -134,7 +107,7 @@ pipeline {
                             echo "Creating ConfigMap with validation disabled..."
                             kubectl --kubeconfig=${KUBE_CONFIG} \
                                 create configmap realm-export \
-                                --from-file=Chexy-B/keycloak/realm-export.json \
+                                --from-file=backend/keycloak/realm-export.json \
                                 -n chexy --dry-run=client -o yaml > /tmp/configmap.yaml || exit 1
 
                             echo "Applying ConfigMap..."

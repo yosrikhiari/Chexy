@@ -1,21 +1,21 @@
 # Chexy — Backend
 
 Spring Boot API for **Chexy**, a chess platform with a classic mode and an RPG mode (armies,
-gold, special abilities, tie resolution). One of four repositories:
+gold, special abilities, tie resolution). Part of the [Chexy monorepo](https://github.com/yosrikhiari/Chexy):
 
-| Repo | Role |
+| Folder | Role |
 |---|---|
-| **Chexy-B** (this one) | Spring Boot 3.4 API, realtime, auth, game orchestration |
-| [Chexy-F](https://github.com/yosrikhiari/Chexy-F) | React 18 + Vite client |
-| [Chexy-M](https://github.com/yosrikhiari/Chexy-M) | Flask AI service (Stockfish bots, opening detection, RPG enemy armies) |
-| [Chexy-Deployment](https://github.com/yosrikhiari/Chexy-Deployment) | Kubernetes manifests + Jenkins pipeline |
+| `backend/` | Spring Boot 3.4 API, realtime, Keycloak auth, MongoDB, Kafka |
+| `frontend/` | React 18 + Vite + TypeScript client |
+| `ml/` | Flask AI service (Stockfish bots, opening detection, RPG enemy armies) |
+| `deploy/` | Kubernetes manifests + Jenkins pipeline |
 
 ## What it does
 
 - **Classic chess** — game sessions, moves, timers over WebSocket, spectators, game history,
   tie resolution, matchmaking and invites, tournaments.
 - **RPG mode** — enhanced games with armies, gold management, player actions and AI-generated
-  enemy armies (from Chexy-M).
+  enemy armies (from `ml/`).
 - **Social** — users, friendships, chat, realtime notifications.
 - **Analytics** — per-game analytics with scheduled cleanup.
 

@@ -1,14 +1,13 @@
 # Chexy — Frontend
 
-React client for **Chexy**, a chess platform with a classic mode and an RPG mode. One of four
-repositories:
+React client for **Chexy**, a chess platform with a classic mode and an RPG mode. Part of the [Chexy monorepo](https://github.com/yosrikhiari/Chexy):
 
-| Repo | Role |
+| Folder | Role |
 |---|---|
-| [Chexy-B](https://github.com/yosrikhiari/Chexy-B) | Spring Boot API, realtime, Keycloak auth, MongoDB, Kafka |
-| **Chexy-F** (this one) | React 18 + Vite + TypeScript client |
-| [Chexy-M](https://github.com/yosrikhiari/Chexy-M) | Flask AI service (Stockfish bots, opening detection, RPG enemy armies) |
-| [Chexy-Deployment](https://github.com/yosrikhiari/Chexy-Deployment) | Kubernetes manifests + Jenkins pipeline |
+| `backend/` | Spring Boot 3.4 API, realtime, Keycloak auth, MongoDB, Kafka |
+| `frontend/` | React 18 + Vite + TypeScript client |
+| `ml/` | Flask AI service (Stockfish bots, opening detection, RPG enemy armies) |
+| `deploy/` | Kubernetes manifests + Jenkins pipeline |
 
 ## What it does
 

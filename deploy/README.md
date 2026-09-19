@@ -1,14 +1,14 @@
 # Chexy — Deployment
 
 Kubernetes manifests and a Jenkins pipeline that build and deploy the whole **Chexy** stack.
-One of four repositories:
+Part of the [Chexy monorepo](https://github.com/yosrikhiari/Chexy):
 
-| Repo | Role |
+| Folder | Role |
 |---|---|
-| [Chexy-B](https://github.com/yosrikhiari/Chexy-B) | Spring Boot API, realtime, Keycloak auth, MongoDB, Kafka |
-| [Chexy-F](https://github.com/yosrikhiari/Chexy-F) | React 18 + Vite client |
-| [Chexy-M](https://github.com/yosrikhiari/Chexy-M) | Flask AI service (Stockfish bots, opening detection, RPG enemy armies) |
-| **Chexy-Deployment** (this one) | Kubernetes + Jenkins |
+| `backend/` | Spring Boot 3.4 API, realtime, Keycloak auth, MongoDB, Kafka |
+| `frontend/` | React 18 + Vite + TypeScript client |
+| `ml/` | Flask AI service (Stockfish bots, opening detection, RPG enemy armies) |
+| `deploy/` | Kubernetes manifests + Jenkins pipeline |
 
 ## What is deployed
 
