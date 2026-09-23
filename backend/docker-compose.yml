@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: keycloak_db
       POSTGRES_USER: keycloak_user
-      POSTGRES_PASSWORD: keycloak_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-keycloak_password}
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -44,7 +44,7 @@ services:
     container_name: chexy_mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo_user
-      MONGO_INITDB_ROOT_PASSWORD: mongo_password
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-mongo_password}
       MONGO_INITDB_DATABASE: chessmystic
     volumes:
       - mongodb-data:/data/db
@@ -67,10 +67,10 @@ services:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak_db
       KC_DB_USERNAME: keycloak_user
-      KC_DB_PASSWORD: keycloak_password
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-keycloak_password}
       # Admin credentials
       KC_BOOTSTRAP_ADMIN_USERNAME: chessnewadmin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in backend/.env}
       # Hostname configuration (updated)
       KC_HOSTNAME: keycloak
       KC_HOSTNAME_STRICT: "false"
@@ -106,7 +106,7 @@ services:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATA_MONGODB_URI: mongodb://mongo_user:mongo_password@mongodb:27017/chessmystic?authSource=admin
+      SPRING_DATA_MONGODB_URI: mongodb://mongo_user:${MONGO_PASSWORD:-mongo_password}@mongodb:27017/chessmystic?authSource=admin
       SPRING_DATA_MONGODB_CONNECTION_TIMEOUT: 30000
       SPRING_DATA_MONGODB_SOCKET_TIMEOUT: 30000
       KEYCLOAK_SERVER_URL: http://keycloak:8080
@@ -117,7 +117,9 @@ services:
       SPRING_MVC_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8080
       JAVA_OPTS: -Xmx512m -Xms256m -Djava.security.egd=file:/dev/./urandom
       HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}
-      GMAIL_PASSWORD: zeltgszvyglastfa
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD:?set GMAIL_PASSWORD in backend/.env}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:?set KEYCLOAK_CLIENT_SECRET in backend/.env}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in backend/.env}
     networks:
       - chexy-network
     depends_on:
